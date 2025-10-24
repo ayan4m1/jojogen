@@ -5869,9 +5869,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jojo-standgen@workspace:.":
+"jojogen@workspace:.":
   version: 0.0.0-use.local
-  resolution: "jojo-standgen@workspace:."
+  resolution: "jojogen@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.38.0"
     "@fortawesome/fontawesome-svg-core": "npm:^7.1.0"
