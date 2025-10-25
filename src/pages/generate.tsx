@@ -1,15 +1,20 @@
-import { Fragment, useCallback, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import { Button, Card, Form } from 'react-bootstrap';
+import { FastAverageColor } from 'fast-average-color';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faDice, faRefresh } from '@fortawesome/free-solid-svg-icons';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 
 import { StandForm } from '../types';
 import { BACKGROUND_COUNT, getPageTitle } from '../utils';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDice, faRefresh } from '@fortawesome/free-solid-svg-icons';
+import { contrastColor } from 'contrast-color';
 
 export function Component() {
-  const [backgroundSrc, setBackgroundSrc] = useState<string>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [textColor, setTextColor] = useState<string>(null);
   const [backgroundIndex, setBackgroundIndex] = useState(1);
+  const [backgroundSrc, setBackgroundSrc] = useState<string>(null);
   const { errors, values, handleSubmit, handleChange } = useFormik<StandForm>({
     initialValues: {
       name: 'Stand Name',
@@ -21,7 +26,25 @@ export function Component() {
       precision: 3,
       potential: 3
     },
-    onSubmit: () => {}
+    onSubmit: ({ name, master }) => {
+      if (!canvasRef.current || !containerRef.current) {
+        return;
+      }
+
+      canvasRef.current.height = containerRef.current.offsetHeight;
+      canvasRef.current.width = containerRef.current.offsetWidth;
+
+      const ctx = canvasRef.current.getContext('2d');
+      const { width, height } = canvasRef.current;
+
+      ctx.font = '48px MS Trebuchet';
+      ctx.textBaseline = 'top';
+      ctx.fillStyle = textColor;
+      ctx.fillText('「 Stand Name 」', 40, 40);
+      ctx.fillText(name, 40, 96);
+      ctx.fillText('「 Stand Master 」', width - 400, height - 144);
+      ctx.fillText(master, width - 400, height - 88);
+    }
   });
   const handleNewBackground = useCallback(
     () => setBackgroundIndex(Math.ceil(Math.random() * BACKGROUND_COUNT)),
@@ -30,8 +53,16 @@ export function Component() {
 
   useEffect(() => {
     async function loadNewImage() {
-      setBackgroundSrc(
-        (await import(`../images/${backgroundIndex}.png`)).default
+      const imageSrc = (await import(`../images/${backgroundIndex}.png`))
+        .default;
+      const averager = new FastAverageColor();
+      const { hex } = await averager.getColorAsync(imageSrc);
+
+      setBackgroundSrc(imageSrc);
+      setTextColor(
+        contrastColor({
+          bgColor: hex
+        })
       );
     }
 
@@ -163,13 +194,21 @@ export function Component() {
       </Card>
       <div
         className="my-4"
+        ref={containerRef}
         style={{
+          backgroundPosition: '50% 50%',
           backgroundImage: `url("${backgroundSrc}")`,
           maxWidth: 1280,
           height: 696
         }}
       >
-        &nbsp;
+        <canvas
+          ref={canvasRef}
+          style={{
+            width: '100%',
+            height: '100%'
+          }}
+        />
       </div>
       &nbsp;
     </Fragment>

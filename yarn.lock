@@ -1097,6 +1097,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/contrast-color@npm:^1":
+  version: 1.0.3
+  resolution: "@types/contrast-color@npm:1.0.3"
+  checksum: 10c0/5705870f85bd8155985df4af3f1ea9a546285d66cf1749bb629ed1e45dbd475bf0ac30c7ed5ca59cf72bb5137f419408f2e14c233f6c29944e6945cec1a45d6f
+  languageName: node
+  linkType: hard
+
 "@types/d3-array@npm:^3.0.3":
   version: 3.2.2
   resolution: "@types/d3-array@npm:3.2.2"
@@ -2903,6 +2910,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"contrast-color@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "contrast-color@npm:1.0.1"
+  checksum: 10c0/aceb9f286a4e17ca7e4ce398c3d0de4cec2c3a61db36960685a395d6175a1302ce7b11a6007751193a090d8a8d91b60ca641bc1b5cae8dd5a4d38c4188641ca7
+  languageName: node
+  linkType: hard
+
 "convert-source-map@npm:^2.0.0":
   version: 2.0.0
   resolution: "convert-source-map@npm:2.0.0"
@@ -4352,6 +4366,13 @@ __metadata:
     utils-merge: "npm:1.0.1"
     vary: "npm:~1.1.2"
   checksum: 10c0/38168fd0a32756600b56e6214afecf4fc79ec28eca7f7a91c2ab8d50df4f47562ca3f9dee412da7f5cea6b1a1544b33b40f9f8586dbacfbdada0fe90dbb10a1f
+  languageName: node
+  linkType: hard
+
+"fast-average-color@npm:^9.5.0":
+  version: 9.5.0
+  resolution: "fast-average-color@npm:9.5.0"
+  checksum: 10c0/766f78beaed852030ff52d13ba64f433c2af10fabc3cabfb6ec8ea2cd9b71a1049c02374ed8974553beef0734617937c46521b57fb13768368c2f0b8fc0b0b34
   languageName: node
   linkType: hard
 
@@ -5877,6 +5898,7 @@ __metadata:
     "@fortawesome/fontawesome-svg-core": "npm:^7.1.0"
     "@fortawesome/free-solid-svg-icons": "npm:^7.1.0"
     "@fortawesome/react-fontawesome": "npm:3.1.0"
+    "@types/contrast-color": "npm:^1"
     "@types/lodash": "npm:^4"
     "@types/node": "npm:^24.9.1"
     "@types/pluralize": "npm:^0.0.33"
@@ -5890,6 +5912,7 @@ __metadata:
     bootswatch: "npm:^5.3.8"
     clean-webpack-plugin: "npm:^4.0.0"
     cname-webpack-plugin: "npm:^3.0.0"
+    contrast-color: "npm:^1.0.1"
     cross-env: "npm:^10.1.0"
     css-loader: "npm:^7.1.2"
     css-minimizer-webpack-plugin: "npm:^7.0.2"
@@ -5903,6 +5926,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.37.5"
     eslint-plugin-react-hooks: "npm:^7.0.0"
     eslint-webpack-plugin: "npm:^5.0.2"
+    fast-average-color: "npm:^9.5.0"
     formik: "npm:^2.4.6"
     globals: "npm:^16.4.0"
     html-loader: "npm:^5.1.0"
