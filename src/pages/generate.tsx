@@ -1,25 +1,37 @@
 import { useFormik } from 'formik';
+import getImageSize from 'image-size';
 import { contrastColor } from 'contrast-color';
 import { Button, Card, Form } from 'react-bootstrap';
 import { FastAverageColor } from 'fast-average-color';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDice, faRefresh } from '@fortawesome/free-solid-svg-icons';
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react';
 
 import { StandForm } from '../types';
-import radarPlotBg from '../images/radar-plot-bg.png';
-import { BACKGROUND_COUNT, getPageTitle } from '../utils';
+import radarPlotBg from '../images/radar-plot-bg.svg';
+import { BACKGROUND_COUNT, bufferToImageString, getPageTitle } from '../utils';
 
-const radarRadiusCoefficient = 0.65;
+const radarPlotSize = 256;
+const radarRadiusCoefficient = 0.567;
 const RADIAN = Math.PI / 180;
 
 export function Component() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  // const [imageSrc, setImageSrc] = useState<string>(null);
+  const radarCanvasRef = useRef<HTMLCanvasElement>(null);
+  const [imageSrc, setImageSrc] = useState<string>(null);
   const [textColor, setTextColor] = useState<string>(null);
   const [backgroundIndex, setBackgroundIndex] = useState(1);
+  const [radarPlotSrc, setRadarPlotSrc] = useState<string>(null);
   const [backgroundSrc, setBackgroundSrc] = useState<string>(null);
+  const [imageSize, setImageSize] = useState<[number, number]>([0, 0]);
   const { errors, values, handleSubmit, handleChange } = useFormik<StandForm>({
     initialValues: {
       name: 'Stand Name',
@@ -48,81 +60,77 @@ export function Component() {
       canvasRef.current.height = containerRef.current.offsetHeight;
       canvasRef.current.width = containerRef.current.offsetWidth;
 
-      // const image = new Image();
-
-      // image.onload = () => {
-      //   ctx.drawImage(image, width - 400, height - 100);
-      // };
-      // image.src = imageSrc;
-
       const ctx = canvasRef.current.getContext('2d');
       const { width, height } = canvasRef.current;
 
-      ctx.font = '48px MS Trebuchet';
-      ctx.textBaseline = 'top';
-      ctx.fillStyle = textColor;
-      ctx.fillText('「 Stand Name 」', 40, 40);
-      ctx.fillText(name, 40, 96);
-      ctx.fillText('「 Stand Master 」', width - 400, height - 144);
-      ctx.fillText(master, width - 400, height - 88);
+      const image = new Image();
 
-      const radarPlotBgImg = new Image();
-      const radarPlotCoords = [80, height - 300];
+      image.onload = () => {
+        const fitHeight = height - 104;
+        const aspectRatio = imageSize[0] / imageSize[1];
+        const newWidth = fitHeight * aspectRatio;
+        const imageX = width / 2 - newWidth / 2;
 
-      radarPlotBgImg.src = radarPlotBg;
-      radarPlotBgImg.onload = () => {
-        ctx.drawImage(
-          radarPlotBgImg,
-          radarPlotCoords[0],
-          radarPlotCoords[1],
-          256,
-          256
-        );
+        ctx.drawImage(image, imageX, 96, newWidth, fitHeight);
+
+        ctx.font = '48px MS Trebuchet';
+        ctx.fillStyle = textColor;
+        ctx.textBaseline = 'top';
+
+        ctx.fillText('「 Stand Name 」', 16, 40);
+        ctx.fillText(name, 40, 96);
+        ctx.textAlign = 'right';
+        ctx.fillText('「 Stand Master 」', width - 54, height - 144);
+        ctx.fillText(master, width - 80, height - 88);
       };
+      image.src = imageSrc;
 
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = '#ff0000';
-
-      const maxRadius = (256 * radarRadiusCoefficient) / 2;
+      const radarPlotCtx = radarCanvasRef.current.getContext('2d');
+      const maxRadius = (radarPlotSize * radarRadiusCoefficient) / 2;
       const stats = [durability, precision, potential, power, speed, range];
 
-      ctx.beginPath();
-
-      const radarPlotCenterCoords = [
-        radarPlotCoords[0] + 128,
-        radarPlotCoords[1] + 128
-      ];
-
-      for (let i = 5; i >= 0; i--) {
+      for (let i = 0; i < 6; i++) {
         const startAngle = (i / 6) * 360;
         const endAngle = ((i + 1) / 6) * 360;
         const radius = maxRadius * (stats[i] / 6);
         const nextRadius =
           maxRadius * (stats[i + 1 === stats.length ? 0 : i + 1] / 6);
 
-        const x1 =
-          radarPlotCenterCoords[0] + Math.sin(-startAngle * RADIAN) * radius;
-        const y1 =
-          radarPlotCenterCoords[1] + Math.cos(-startAngle * RADIAN) * radius;
+        const x1 = radarPlotSize / 2 + Math.sin(-startAngle * RADIAN) * radius;
+        const y1 = radarPlotSize / 2 + Math.cos(-startAngle * RADIAN) * radius;
         const x2 =
-          radarPlotCenterCoords[0] + Math.sin(-endAngle * RADIAN) * nextRadius;
+          radarPlotSize / 2 + Math.sin(-endAngle * RADIAN) * nextRadius;
         const y2 =
-          radarPlotCenterCoords[1] + Math.cos(-endAngle * RADIAN) * nextRadius;
+          radarPlotSize / 2 + Math.cos(-endAngle * RADIAN) * nextRadius;
 
         if (i === 0) {
-          ctx.moveTo(x1, y1);
+          radarPlotCtx.moveTo(x1, y1);
         }
-        ctx.lineTo(x2, y2);
 
-        console.dir(`${x1} ${y1} to ${x2} ${y2}`);
+        radarPlotCtx.lineTo(x2, y2);
       }
 
-      ctx.fillStyle = '#ff0000';
-      ctx.fill();
+      radarPlotCtx.fillStyle = '#ff0000';
+      radarPlotCtx.fill();
     }
   });
   const handleNewBackground = useCallback(
     () => setBackgroundIndex(Math.ceil(Math.random() * BACKGROUND_COUNT)),
+    []
+  );
+  const handleFileChange = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const { files } = e.target;
+
+      if (files.length) {
+        const file = files.item(0);
+        const bytes = await file.bytes();
+        const { width, height } = getImageSize(bytes);
+
+        setImageSrc(bufferToImageString(bytes));
+        setImageSize([width, height]);
+      }
+    },
     []
   );
 
@@ -131,18 +139,23 @@ export function Component() {
       const imageSrc = (await import(`../images/${backgroundIndex}.png`))
         .default;
       const averager = new FastAverageColor();
-      const { hex } = await averager.getColorAsync(imageSrc);
+      const { hex } = await averager.getColorAsync(imageSrc, {
+        width: 400,
+        height: 300
+      });
+      const newTextColor = contrastColor({
+        bgColor: hex
+      });
 
       setBackgroundSrc(imageSrc);
-      setTextColor(
-        contrastColor({
-          bgColor: hex
-        })
-      );
+      setTextColor(newTextColor);
+      setRadarPlotSrc(radarPlotBg.replace(/#000000/g, `${newTextColor}`));
     }
 
     loadNewImage();
   }, [backgroundIndex]);
+
+  useEffect(() => {});
 
   return (
     <Fragment>
@@ -178,6 +191,14 @@ export function Component() {
             <Form.Control.Feedback type="invalid">
               {errors.master}
             </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group>
+            <Form.Label>Stand Image</Form.Label>
+            <Form.Control
+              name="image"
+              onChange={handleFileChange}
+              type="file"
+            />
           </Form.Group>
           <Form.Group className="mt-2">
             <h4>Stats</h4>
@@ -280,9 +301,34 @@ export function Component() {
         <canvas
           ref={canvasRef}
           style={{
+            position: 'relative',
+            top: 0,
             width: '100%',
             height: '100%'
           }}
+        />
+        <canvas
+          height={radarPlotSize}
+          id="radarPlot"
+          ref={radarCanvasRef}
+          style={{
+            float: 'left',
+            position: 'relative',
+            left: 80,
+            bottom: radarPlotSize + 80
+          }}
+          width={radarPlotSize}
+        ></canvas>
+        <svg
+          dangerouslySetInnerHTML={{ __html: radarPlotSrc }}
+          height={radarPlotSize}
+          style={{
+            position: 'relative',
+            left: -176,
+            bottom: radarPlotSize + 80
+          }}
+          viewBox="0 0 79 79"
+          width={radarPlotSize}
         />
       </div>
       &nbsp;

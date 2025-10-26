@@ -63,6 +63,10 @@ const config: Configuration = {
         type: 'asset/inline'
       },
       {
+        test: /\.svg$/,
+        type: 'asset/source'
+      },
+      {
         test: /\.tsx?$/,
         use: ['ts-loader'],
         exclude: /node_modules/
