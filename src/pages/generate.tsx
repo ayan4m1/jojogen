@@ -1,7 +1,7 @@
 import { useFormik } from 'formik';
 import getImageSize from 'image-size';
 import { contrastColor } from 'contrast-color';
-import { Button, Card, Form } from 'react-bootstrap';
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { FastAverageColor } from 'fast-average-color';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDice, faRefresh } from '@fortawesome/free-solid-svg-icons';
@@ -15,6 +15,7 @@ import {
 } from 'react';
 
 import { StandForm } from '../types';
+import defaultStandImage from '../images/capy.png';
 import radarPlotBg from '../images/radar-plot-bg.svg';
 import { BACKGROUND_COUNT, bufferToImageString, getPageTitle } from '../utils';
 
@@ -26,12 +27,12 @@ export function Component() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const radarCanvasRef = useRef<HTMLCanvasElement>(null);
-  const [imageSrc, setImageSrc] = useState<string>(null);
   const [textColor, setTextColor] = useState<string>(null);
   const [backgroundIndex, setBackgroundIndex] = useState(1);
   const [radarPlotSrc, setRadarPlotSrc] = useState<string>(null);
   const [backgroundSrc, setBackgroundSrc] = useState<string>(null);
-  const [imageSize, setImageSize] = useState<[number, number]>([0, 0]);
+  const [imageSrc, setImageSrc] = useState<string>(defaultStandImage);
+  const [imageSize, setImageSize] = useState<[number, number]>([445, 561]);
   const { errors, values, handleSubmit, handleChange } = useFormik<StandForm>({
     initialValues: {
       name: 'Stand Name',
@@ -153,9 +154,9 @@ export function Component() {
     }
 
     loadNewImage();
-  }, [backgroundIndex]);
+  }, [backgroundIndex, handleSubmit]);
 
-  useEffect(() => {});
+  useEffect(handleSubmit, [textColor, handleSubmit]);
 
   return (
     <Fragment>
@@ -203,86 +204,88 @@ export function Component() {
           <Form.Group className="mt-2">
             <h4>Stats</h4>
           </Form.Group>
-          <Form.Group>
-            <Form.Label>Power</Form.Label>
-            <Form.Range
-              max={5}
-              min={1}
-              name="power"
-              onChange={handleChange}
-              step={1}
-              value={values.power}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Speed</Form.Label>
-            <Form.Range
-              max={5}
-              min={1}
-              name="speed"
-              onChange={handleChange}
-              step={1}
-              value={values.speed}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Range</Form.Label>
-            <Form.Range
-              max={5}
-              min={1}
-              name="range"
-              onChange={handleChange}
-              step={1}
-              value={values.range}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Durability</Form.Label>
-            <Form.Range
-              max={5}
-              min={1}
-              name="durability"
-              onChange={handleChange}
-              step={1}
-              value={values.durability}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Precision</Form.Label>
-            <Form.Range
-              max={5}
-              min={1}
-              name="precision"
-              onChange={handleChange}
-              step={1}
-              value={values.precision}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Potential</Form.Label>
-            <Form.Range
-              max={5}
-              min={1}
-              name="potential"
-              onChange={handleChange}
-              step={1}
-              value={values.potential}
-            />
-          </Form.Group>
+          <Container>
+            <Row>
+              <Form.Group as={Col} xs={4}>
+                <Form.Label>Power</Form.Label>
+                <Form.Range
+                  max={5}
+                  min={1}
+                  name="power"
+                  onChange={handleChange}
+                  step={1}
+                  value={values.power}
+                />
+              </Form.Group>
+              <Form.Group as={Col} xs={4}>
+                <Form.Label>Speed</Form.Label>
+                <Form.Range
+                  max={5}
+                  min={1}
+                  name="speed"
+                  onChange={handleChange}
+                  step={1}
+                  value={values.speed}
+                />
+              </Form.Group>
+              <Form.Group as={Col} xs={4}>
+                <Form.Label>Range</Form.Label>
+                <Form.Range
+                  max={5}
+                  min={1}
+                  name="range"
+                  onChange={handleChange}
+                  step={1}
+                  value={values.range}
+                />
+              </Form.Group>
+              <Form.Group as={Col} xs={4}>
+                <Form.Label>Durability</Form.Label>
+                <Form.Range
+                  max={5}
+                  min={1}
+                  name="durability"
+                  onChange={handleChange}
+                  step={1}
+                  value={values.durability}
+                />
+              </Form.Group>
+              <Form.Group as={Col} xs={4}>
+                <Form.Label>Precision</Form.Label>
+                <Form.Range
+                  max={5}
+                  min={1}
+                  name="precision"
+                  onChange={handleChange}
+                  step={1}
+                  value={values.precision}
+                />
+              </Form.Group>
+              <Form.Group as={Col} xs={4}>
+                <Form.Label>Potential</Form.Label>
+                <Form.Range
+                  max={5}
+                  min={1}
+                  name="potential"
+                  onChange={handleChange}
+                  step={1}
+                  value={values.potential}
+                />
+              </Form.Group>
+            </Row>
+          </Container>
           <Form.Group>
             <h4>Actions</h4>
           </Form.Group>
           <Form.Group>
             <Button
-              className="my-2"
+              className="my-2 me-2"
               onClick={handleNewBackground}
               type="submit"
             >
-              <FontAwesomeIcon icon={faDice} /> New Background
+              <FontAwesomeIcon icon={faDice} /> Change Background
             </Button>
-          </Form.Group>
-          <Form.Group>
-            <Button type="submit">
+            <Button type="submit" variant="success">
               <FontAwesomeIcon icon={faRefresh} /> Update
             </Button>
           </Form.Group>
