@@ -140,6 +140,8 @@ export function Component() {
       const imageSrc = (await import(`../images/${backgroundIndex}.png`))
         .default;
       const averager = new FastAverageColor();
+      // only average the top left corner so we get a more accurate estimate for text
+      // todo: lerp with bottom right corner estimate
       const { hex } = await averager.getColorAsync(imageSrc, {
         width: 400,
         height: 300
@@ -327,8 +329,8 @@ export function Component() {
           height={radarPlotSize}
           style={{
             position: 'relative',
-            left: -176,
-            bottom: radarPlotSize + 80
+            left: -175,
+            bottom: radarPlotSize + 79
           }}
           viewBox="0 0 79 79"
           width={radarPlotSize}
